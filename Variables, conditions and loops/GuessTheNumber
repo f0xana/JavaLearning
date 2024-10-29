@@ -1,0 +1,44 @@
+import java.util.Random;
+import java.util.Scanner;
+
+public class GuessTheNumber {
+
+    public int getRandomNumber() {
+        Random rd = new Random();
+        int numberToGuess = rd.nextInt(11);
+        return numberToGuess;
+    }
+
+    public int enterGuess(){
+        Scanner scanner =  new Scanner(System.in);
+        System.out.print("Enter an integer between 1 and 10: ");
+        try {
+            int guessedNumber = scanner.nextInt();
+            if (guessedNumber < 1 || guessedNumber > 10) {
+                System.out.println("Your guess must be between 1 and 10.");
+                return enterGuess();
+            }
+            return guessedNumber;
+        } catch (Exception e) {
+            System.out.println("You should've entered a valid number.");
+            scanner.next();
+            return enterGuess();
+        }
+    }
+    public static void main(String[] args) {
+        System.out.println("Starting a new game!");
+        System.out.println("Selecting a number...");
+        System.out.println("Ready!");
+
+        GuessTheNumber guess = new GuessTheNumber();
+
+        int num = guess.getRandomNumber();
+        int enteredNum = 0;
+
+        while (enteredNum!=num) {
+            enteredNum = guess.enterGuess();
+        }
+        System.out.println("Congrats! The number was " + num);
+
+    }
+}

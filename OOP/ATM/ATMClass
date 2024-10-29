@@ -1,53 +1,55 @@
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class ATM {
-    private Map<String, String> dictOfAccounts;
-    private float balance;
+    private Map<String, Account> dictOfAccounts = new HashMap<>();
     Scanner sc = new Scanner(System.in);
 
-    public ATM(float balance){
-        this.balance = balance;
-        dictOfAccounts = new HashMap<>();
-
-        dictOfAccounts.put("20345", "0000");
-        dictOfAccounts.put("83751", "4466");
-        dictOfAccounts.put("48219", "1121");
-
-    }
-    public void showBalance(){
-        System.out.println("You have " + balance + "EUR on your account");
-        selectWhatToDo();
+    public void createAccount(String accountID, String pin, double balance){
+        Account accountDetails = new Account(accountID, pin, balance);
+        dictOfAccounts.put(accountID, accountDetails);
     }
 
-    public void withdrawMoney(){
+    public void showBalance(String accountID){
+        Account account = dictOfAccounts.get(accountID);
+        if (account != null) {
+            System.out.printf("You have %.2f EUR on your account", account.getBalance());
+        }
+        selectWhatToDo(accountID);
+    }
+
+    public void withdrawMoney(String accountID){
+        Account account = dictOfAccounts.get(accountID);
         System.out.println("Please enter the sum you'd like to withdraw from your account: ");
         float sum = sc.nextFloat();
+        double balance = account.getBalance();
         if (sum <= balance){
             balance = balance - sum;
-            System.out.println("You've successfully withdrawn " + sum + "EUR from your account.");
+            account.setBalance(balance);
+            System.out.printf("You've successfully withdrawn %.2fEUR from your account.", sum);
         }
         else {
             System.out.println("You don't have enough money for this operation");
         }
-        selectWhatToDo();
+        selectWhatToDo(accountID);
     }
 
-    public void depositMoney(){
+    public void depositMoney(String accountID){
+        Account account = dictOfAccounts.get(accountID);
         System.out.println("Please enter the sum you'd like to put on your account: ");
         float sum = sc.nextFloat();
+        double balance = account.getBalance();
         if (sum > 0){
             balance = balance + sum;
-            System.out.println("You've successfully put " + sum + "EUR to your account.");
+            account.setBalance(balance);
+            System.out.printf("You've successfully put %.2f EUR to your account.\n", sum);
         }
         else {
             System.out.println("You can't put that amount of money on your account");
         }
-        selectWhatToDo();
+        selectWhatToDo(accountID);
     }
 
-    public void selectWhatToDo() {
+    public void selectWhatToDo(String accountID) {
         System.out.println("\nWhat would you like to do? Type the number:");
         System.out.println("1. Check balance");
         System.out.println("2. Withdraw money");
@@ -56,26 +58,28 @@ public class ATM {
 
         int selectedAction = sc.nextInt();
         switch (selectedAction) {
-            case 1 -> showBalance();
-            case 2 -> withdrawMoney();
-            case 3 -> depositMoney();
+            case 1 -> showBalance(accountID);
+            case 2 -> withdrawMoney(accountID);
+            case 3 -> depositMoney(accountID);
             case 4 -> System.out.println("Thank you! Logging out.");
             default -> {
                 System.out.println("Invalid selection. Try again.");
-                selectWhatToDo();
+                selectWhatToDo(accountID);
             }
         }
     }
 
     public void checkCredentials() {
+        Account account = null;
         try {
             System.out.println("Please enter the id number of your account: ");
             String accountID = sc.nextLine();
             System.out.println("Please enter the pin from your account: ");
             String pin = sc.nextLine();
-            if (dictOfAccounts.containsKey(accountID) && dictOfAccounts.get(accountID).equals(pin)) {
+            if (dictOfAccounts.containsKey(accountID) && dictOfAccounts.get(accountID).getAccountPin().equals(pin)) {
                 System.out.println("Login successfull!");
-                selectWhatToDo();
+                account = dictOfAccounts.get(accountID);
+                selectWhatToDo(account.getAccountID());
             } else {
                 System.out.println("The system couldn't recognize your account or the password is incorrect. Please verify your data.");
                 checkCredentials();
@@ -86,7 +90,9 @@ public class ATM {
     }
 
     public static void main(String[] args) {
-        ATM atm = new ATM(1000);
+        ATM atm = new ATM();
+        atm.createAccount("20345", "0000", 500);
+        atm.createAccount("11111", "1111", 0);
         atm.checkCredentials();
     }
 }

@@ -8,4 +8,6 @@ Start date: 19/10/2024
 Completed projects: 
 1. Calculator  - 19/10/2024
 2. Guess the number console game - 19/10/2024
-3. ATM - 29/10/2024
+
+In progress:
+1. ATM - 29/10/2024

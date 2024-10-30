@@ -1,0 +1,83 @@
+import java.sql.Array;
+import java.sql.SQLOutput;
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.Scanner;
+
+public class TaskManager {
+
+    private ArrayList<Task> tasksList = new ArrayList<Task>();
+    public static String[] menuOptions = {
+            "Display all tasks",
+            "Add a task",
+            "Remove a task"
+    };
+    public static final Scanner sc = new Scanner(System.in);
+
+    public void selectWhatToDo(){
+        System.out.println("Please enter the number of an option you'd like to select:");
+        for (int i=0; i<menuOptions.length; i++){
+            System.out.println((i+1) + ". " + menuOptions[i]);
+        }
+        int userChoice = sc.nextInt();
+        sc.nextLine();
+        if (0<userChoice && userChoice<=menuOptions.length) {
+            switch (userChoice){
+                case 1 -> printAllTasks();
+                case 2 -> addTask();
+                case 3 -> deleteTask();
+            }
+        }
+    }
+
+    public void printAllTasks() {
+        if (tasksList.isEmpty()) {
+            System.out.println("The current list of tasks is empty");
+        } else{
+            for (Task task : tasksList) {
+                System.out.println(task.printTask());
+            }
+        }
+        selectWhatToDo();
+    }
+
+    public void addTask() {
+        System.out.println("Please enter the task title:");
+        String taskTitle = sc.nextLine();
+        System.out.println("Please enter one of the possible priorities of the task: Low, Moderated, Urgent:");
+        String taskPriority = sc.nextLine();
+        int taskId = tasksList.size() + 1;
+
+        try {
+            Task tsk = new Task(taskId, taskTitle, taskPriority);
+            tasksList.add(tsk);
+            System.out.println("The task is successfully created!");
+        } catch (Exception e) {
+            System.out.println("The error occured while creating the task: " + e);
+        }
+        selectWhatToDo();
+    }
+
+    public void deleteTask(){
+        System.out.println("Please indicate the number of the task you'd like to delete:");
+        int taskId = sc.nextInt();
+        sc.nextLine();
+        try{
+            Task tsk = tasksList.remove(taskId-1);
+            System.out.printf("The task %s was successfully deleted!\n", tsk.getTaskDescription());
+        } catch (Exception e){
+            System.out.println("The error occured while removing the task: " + e);
+        }
+        selectWhatToDo();
+
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Hello! Welcome to the task manager. C:");
+        System.out.println("Here you can create and keep the track of the tasks you're currently working in.");
+        System.out.println("What would you like to do?");
+        TaskManager tskm = new TaskManager();
+        tskm.selectWhatToDo();
+    }
+
+}

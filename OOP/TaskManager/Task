@@ -1,0 +1,67 @@
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class Task {
+
+    private int taskId;
+    private String taskDescription;
+    private String taskPriority;
+    private String taskStatus;
+
+    private String[] priorityStates = {"Low", "Moderated", "Urgent"};
+    private String[] statusStates = {"Created", "In progress", "Done"};
+
+    public Task(int taskId, String taskDescription, String taskPriority, String taskStatus) {
+        this.taskId = taskId;
+        this.taskDescription = taskDescription;
+        this.taskPriority = taskPriority;
+        this.taskStatus = taskStatus;
+    }
+
+    public Task(int taskId, String taskDescription, String taskPriority){
+        this(taskId, taskDescription, taskPriority, "Created");
+    }
+
+    public int getTaskId() {
+        return taskId;
+    }
+
+    public String getTaskDescription(){
+        return taskDescription;
+    }
+
+    public void setTaskDescription(String description) {
+        this.taskDescription = description;
+    }
+
+    public String getTaskPriority() {
+        return taskPriority;
+    }
+
+    public void setTaskPriority(String priority) {
+        if (Arrays.asList(priorityStates).contains(priority)) {
+            this.taskPriority= priority;
+        } else {
+            System.out.println("This priority type is not recognised");
+        }
+    }
+
+    public String getTaskStatus() {
+        return taskStatus;
+    }
+
+    public void setTaskStatus(String status){
+        if (Arrays.asList(statusStates).contains(status)) {
+            this.taskStatus = status;
+        } else {
+            System.out.println("This status is not recognised");
+        }
+    }
+
+    public String printTask(){
+        return String.format("%d. %s, priority: %s, status: %s", getTaskId(), getTaskDescription(), getTaskPriority(), getTaskStatus());
+    }
+
+
+}

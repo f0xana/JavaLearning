@@ -1,3 +1,5 @@
+import org.w3c.dom.ls.LSOutput;
+
 import java.sql.Array;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
@@ -10,7 +12,10 @@ public class TaskManager {
     public static String[] menuOptions = {
             "Display all tasks",
             "Add a task",
-            "Remove a task"
+            "Remove a task",
+            "Change task status",
+            "Change task priority",
+            "End"
     };
     public static final Scanner sc = new Scanner(System.in);
 
@@ -23,9 +28,12 @@ public class TaskManager {
         sc.nextLine();
         if (0<userChoice && userChoice<=menuOptions.length) {
             switch (userChoice){
-                case 1 -> printAllTasks();
+                case 1 -> displayAllTasks();
                 case 2 -> addTask();
                 case 3 -> deleteTask();
+                case 4 -> changeTaskStatus();
+                case 5 -> changeTaskPriority();
+                case 6 -> logOut();
             }
         }
     }
@@ -33,11 +41,15 @@ public class TaskManager {
     public void printAllTasks() {
         if (tasksList.isEmpty()) {
             System.out.println("The current list of tasks is empty");
-        } else{
+        } else {
             for (Task task : tasksList) {
                 System.out.println(task.printTask());
             }
         }
+    }
+
+    public void displayAllTasks(){
+        printAllTasks();
         selectWhatToDo();
     }
 
@@ -59,6 +71,7 @@ public class TaskManager {
     }
 
     public void deleteTask(){
+        printAllTasks();
         System.out.println("Please indicate the number of the task you'd like to delete:");
         int taskId = sc.nextInt();
         sc.nextLine();
@@ -70,6 +83,42 @@ public class TaskManager {
         }
         selectWhatToDo();
 
+    }
+
+    public void changeTaskStatus() {
+        printAllTasks();
+        System.out.println("Please, enter the id of a task you'd like to change a status for: ");
+        int taskId = sc.nextInt();
+        sc.nextLine();
+        System.out.println("Please, enter the status you want to promote/demote your task to: ");
+        String newStatus = sc.nextLine();
+        try {
+            Task tsk = tasksList.get(taskId-1);
+            tsk.setTaskStatus(newStatus);
+        } catch (Exception e) {
+            System.out.println("Operation of changing the status of a task is unsuccessful.");
+        }
+        selectWhatToDo();
+    }
+
+    public void changeTaskPriority(){
+        printAllTasks();
+        System.out.println("Please, enter the id of a task you'd like to change a priority for: ");
+        int taskId = sc.nextInt();
+        sc.nextLine();
+        System.out.println("Please, enter the ner priority you want to set: ");
+        String newPriority = sc.nextLine();
+        try {
+            Task tsk = tasksList.get(taskId-1);
+            tsk.setTaskPriority(newPriority);
+        } catch (Exception e) {
+            System.out.println("Operation of changing the priority of a task is unsuccessful.");
+        }
+        selectWhatToDo();
+    }
+
+    public void logOut(){
+        System.out.println("Have a nice day!");
     }
 
     public static void main(String[] args) {

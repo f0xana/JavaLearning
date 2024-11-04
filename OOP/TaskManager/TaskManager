@@ -3,6 +3,7 @@ import org.w3c.dom.ls.LSOutput;
 import java.sql.Array;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -13,6 +14,7 @@ public class TaskManager {
             "Display all tasks",
             "Add a task",
             "Remove a task",
+            "Change task description",
             "Change task status",
             "Change task priority",
             "End"
@@ -24,23 +26,41 @@ public class TaskManager {
         for (int i=0; i<menuOptions.length; i++){
             System.out.println((i+1) + ". " + menuOptions[i]);
         }
-        int userChoice = sc.nextInt();
-        sc.nextLine();
-        if (0<userChoice && userChoice<=menuOptions.length) {
-            switch (userChoice){
-                case 1 -> displayAllTasks();
-                case 2 -> addTask();
-                case 3 -> deleteTask();
-                case 4 -> changeTaskStatus();
-                case 5 -> changeTaskPriority();
-                case 6 -> logOut();
+        try {
+            int userChoice = sc.nextInt();
+            sc.nextLine();
+            if (0 < userChoice && userChoice <= menuOptions.length) {
+                switch (userChoice) {
+                    case 1 -> showAllTasks();
+                    case 2 -> addTask();
+                    case 3 -> deleteTask();
+                    case 4 -> changeTaskDescription();
+                    case 5 -> changeTaskStatus();
+                    case 6 -> changeTaskPriority();
+                    case 7 -> logOut();
+                }
+            } else {
+                System.out.println("Please enter the number within the set range.");
+                selectWhatToDo();
             }
+        } catch (InputMismatchException e){
+            System.out.println("Please enter a valid number, not string.");
+            sc.nextLine();
+            selectWhatToDo();
+        }
+    }
+
+    public void reassignTaskIds(){
+        int i = 1;
+        for (Task tsk : tasksList){
+            tsk.setTaskId(i);
+            i++;
         }
     }
 
     public void printAllTasks() {
         if (tasksList.isEmpty()) {
-            System.out.println("The current list of tasks is empty");
+            System.out.println("The current list of tasks is empty.");
         } else {
             for (Task task : tasksList) {
                 System.out.println(task.printTask());
@@ -48,7 +68,7 @@ public class TaskManager {
         }
     }
 
-    public void displayAllTasks(){
+    public void showAllTasks(){
         printAllTasks();
         selectWhatToDo();
     }
@@ -57,32 +77,64 @@ public class TaskManager {
         System.out.println("Please enter the task title:");
         String taskTitle = sc.nextLine();
         System.out.println("Please enter one of the possible priorities of the task: Low, Moderated, Urgent:");
-        String taskPriority = sc.nextLine();
+        String taskPriority = sc.nextLine().trim().toUpperCase().replace(" ", "_");
         int taskId = tasksList.size() + 1;
 
         try {
-            Task tsk = new Task(taskId, taskTitle, taskPriority);
+            Task tsk = new Task(taskId, taskTitle, Task.Priority.valueOf(taskPriority));
             tasksList.add(tsk);
             System.out.println("The task is successfully created!");
         } catch (Exception e) {
             System.out.println("The error occured while creating the task: " + e);
+            sc.nextLine();
+            selectWhatToDo();
         }
         selectWhatToDo();
     }
 
     public void deleteTask(){
         printAllTasks();
-        System.out.println("Please indicate the number of the task you'd like to delete:");
-        int taskId = sc.nextInt();
-        sc.nextLine();
-        try{
-            Task tsk = tasksList.remove(taskId-1);
-            System.out.printf("The task %s was successfully deleted!\n", tsk.getTaskDescription());
-        } catch (Exception e){
-            System.out.println("The error occured while removing the task: " + e);
+        if(tasksList.isEmpty()){
+            System.out.println("You cannot delete a task from empty list.");
+        } else {
+            System.out.println("Please indicate the number of the task you'd like to delete:");
+            int taskId = sc.nextInt();
+            sc.nextLine();
+            try{
+                Task tsk = tasksList.remove(taskId-1);
+                System.out.printf("The task %s was successfully deleted!\n", tsk.getTaskDescription());
+                reassignTaskIds();
+            } catch (Exception e) {
+                System.out.println("The error occured while removing the task: " + e);
+                selectWhatToDo();
+            }
         }
         selectWhatToDo();
+    }
 
+    public void changeTaskDescription(){
+        printAllTasks();
+        if (tasksList.isEmpty()) {
+            System.out.println("You cannot change the description of non-existent task.");
+        } else {
+            System.out.println("Please, enter the id of a task you'd like to change a description for: ");
+
+            int taskId = sc.nextInt();
+            sc.nextLine();
+
+            System.out.println("Please, enter the status you want to promote/demote your task to: Created, In Progress, Done");
+            String newDescriptionInput = sc.nextLine().trim();
+
+            try {
+                Task tsk = tasksList.get(taskId-1);
+                tsk.setTaskDescription(newDescriptionInput);
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("Task ID not found.");
+            } catch (Exception e) {
+                System.out.println("An error occurred while changing the task priority: " + e.getMessage());
+            }
+        }
+        selectWhatToDo();
     }
 
     public void changeTaskStatus() {
@@ -90,32 +142,53 @@ public class TaskManager {
         System.out.println("Please, enter the id of a task you'd like to change a status for: ");
         int taskId = sc.nextInt();
         sc.nextLine();
-        System.out.println("Please, enter the status you want to promote/demote your task to: ");
-        String newStatus = sc.nextLine();
+
+        System.out.println("Please, enter the status you want to promote/demote your task to: Created, In Progress, Done");
+        String newStatusInput = sc.nextLine().trim().toUpperCase().replace(" ", "_");
+
         try {
-            Task tsk = tasksList.get(taskId-1);
-            tsk.setTaskStatus(newStatus);
+            Task tsk = tasksList.get(taskId - 1);
+
+            Task.Status status = Task.Status.valueOf(newStatusInput);
+            tsk.setTaskStatus(status);
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid status entered. Please choose one of: Created, In Progress, Done");
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Task ID not found.");
         } catch (Exception e) {
-            System.out.println("Operation of changing the status of a task is unsuccessful.");
+            System.out.println("An error occurred while changing the task priority: " + e.getMessage());
         }
         selectWhatToDo();
     }
 
-    public void changeTaskPriority(){
+    public void changeTaskPriority() {
         printAllTasks();
-        System.out.println("Please, enter the id of a task you'd like to change a priority for: ");
+        System.out.println("Please, enter the id of the task you'd like to change the priority for: ");
         int taskId = sc.nextInt();
         sc.nextLine();
-        System.out.println("Please, enter the ner priority you want to set: ");
-        String newPriority = sc.nextLine();
+
+        System.out.println("Please, enter the new priority you want to set (Low, Moderated, Urgent): ");
+        String newPriorityInput = sc.nextLine().trim().toUpperCase().replace(" ", "_");
+
+
         try {
-            Task tsk = tasksList.get(taskId-1);
-            tsk.setTaskPriority(newPriority);
+            Task task = tasksList.get(taskId - 1);
+
+            Task.Priority priority = Task.Priority.valueOf(newPriorityInput);
+            task.setTaskPriority(priority);
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid priority entered. Please choose one of: Low, Moderated, Urgent.");
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Task ID not found.");
         } catch (Exception e) {
-            System.out.println("Operation of changing the priority of a task is unsuccessful.");
+            System.out.println("An error occurred while changing the task priority: " + e.getMessage());
         }
+
         selectWhatToDo();
     }
+
 
     public void logOut(){
         System.out.println("Have a nice day!");

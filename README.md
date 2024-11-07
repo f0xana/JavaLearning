@@ -12,14 +12,12 @@ Completed projects:
 
 In progress:
 1. Task Manager - start: 30/10/2024
-   What is left to do (30/10/2024):
+   What is left to do (07/11/2024):
      + Add error handling
-     + Fix task ids in the task list after the task was deleted
-     + Print items in the list before proposing to select an option to delete
+     + Extend the possibilities of action differentiations that goes with the different user classes
+     + Display only the tasks assigned to the particular user if general user
+     + Make different lists of tasks: active and completed
+     + Add I/O (export)
   
    Enhance functionalities:
-     + Modify task priority
      + Filter tasks by their priority
-     + Modify task status
-     + Add I/O in the file
-     + Add user class and Admin class

@@ -1,0 +1,10 @@
+public class Admin extends User{
+
+    public Admin(String name, String userId){
+        super(name, userId);
+        this.role = "Administrator";
+        this.numberOfActiveTasks = 5;
+    }
+
+
+}

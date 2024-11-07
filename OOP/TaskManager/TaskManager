@@ -10,7 +10,10 @@ import java.util.Scanner;
 public class TaskManager {
 
     private ArrayList<Task> tasksList = new ArrayList<Task>();
+    private User currentUser;
+    private static final UserManager usManager = new UserManager();
     public static String[] menuOptions = {
+            "Login",
             "Display all tasks",
             "Add a task",
             "Remove a task",
@@ -20,6 +23,10 @@ public class TaskManager {
             "End"
     };
     public static final Scanner sc = new Scanner(System.in);
+
+    public UserManager getUserManager() {
+        return usManager;
+    }
 
     public void selectWhatToDo(){
         System.out.println("Please enter the number of an option you'd like to select:");
@@ -31,13 +38,14 @@ public class TaskManager {
             sc.nextLine();
             if (0 < userChoice && userChoice <= menuOptions.length) {
                 switch (userChoice) {
-                    case 1 -> showAllTasks();
-                    case 2 -> addTask();
-                    case 3 -> deleteTask();
-                    case 4 -> changeTaskDescription();
-                    case 5 -> changeTaskStatus();
-                    case 6 -> changeTaskPriority();
-                    case 7 -> logOut();
+                    case 1 -> login();
+                    case 2 -> showAllTasks();
+                    case 3 -> addTask();
+                    case 4 -> deleteTask();
+                    case 5 -> changeTaskDescription();
+                    case 6 -> changeTaskStatus();
+                    case 7 -> changeTaskPriority();
+                    case 8 -> logOut();
                 }
             } else {
                 System.out.println("Please enter the number within the set range.");
@@ -58,6 +66,20 @@ public class TaskManager {
         }
     }
 
+    public void login(){
+        System.out.println("Please enter your username: ");
+        String username = sc.nextLine();
+        System.out.println("Please enter your password: ");
+        String password = sc.nextLine();
+        currentUser = usManager.verifyUser(username, password);
+        if (currentUser != null) {
+            System.out.println("Welcome, " + currentUser.getUserName() + "!");
+        } else {
+            login();
+        }
+        selectWhatToDo();
+    }
+
     public void printAllTasks() {
         if (tasksList.isEmpty()) {
             System.out.println("The current list of tasks is empty.");
@@ -74,14 +96,23 @@ public class TaskManager {
     }
 
     public void addTask() {
+        User assignedUser;
+
         System.out.println("Please enter the task title:");
         String taskTitle = sc.nextLine();
         System.out.println("Please enter one of the possible priorities of the task: Low, Moderated, Urgent:");
         String taskPriority = sc.nextLine().trim().toUpperCase().replace(" ", "_");
+        if (Objects.equals(currentUser.getUserRole(), "Administrator")) {
+            System.out.println("Please enter the name of the user you want to assign to this task: ");
+            String userName = sc.nextLine();
+            assignedUser = usManager.checkIfUserExist(userName);
+        } else {
+            assignedUser = currentUser;
+        }
         int taskId = tasksList.size() + 1;
-
         try {
-            Task tsk = new Task(taskId, taskTitle, Task.Priority.valueOf(taskPriority));
+
+            Task tsk = new Task(taskId, taskTitle, Task.Priority.valueOf(taskPriority), assignedUser);
             tasksList.add(tsk);
             System.out.println("The task is successfully created!");
         } catch (Exception e) {
@@ -192,14 +223,6 @@ public class TaskManager {
 
     public void logOut(){
         System.out.println("Have a nice day!");
-    }
-
-    public static void main(String[] args) {
-        System.out.println("Hello! Welcome to the task manager. C:");
-        System.out.println("Here you can create and keep the track of the tasks you're currently working in.");
-        System.out.println("What would you like to do?");
-        TaskManager tskm = new TaskManager();
-        tskm.selectWhatToDo();
     }
 
 }

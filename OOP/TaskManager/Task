@@ -1,13 +1,10 @@
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class Task {
 
     private int taskId;
     private String taskDescription;
     private String taskPriority;
     private String taskStatus;
+    private User assignedUser;
 
 //    private String[] priorityStates = {"Low", "Moderated", "Urgent"};
 //    private String[] statusStates = {"Created", "In progress", "Done"};
@@ -19,15 +16,16 @@ public class Task {
         CREATED, IN_PROGRESS, DONE
     }
 
-    public Task(int taskId, String taskDescription, Priority taskPriority, String taskStatus) {
+    public Task(int taskId, String taskDescription, Priority taskPriority, String taskStatus, User assignedUser) {
         this.taskId = taskId;
         this.taskDescription = taskDescription;
         this.taskPriority = taskPriority.toString();
         this.taskStatus = taskStatus;
+        this.assignedUser = assignedUser;
     }
 
-    public Task(int taskId, String taskDescription, Priority taskPriority){
-        this(taskId, taskDescription, taskPriority, "CREATED");
+    public Task(int taskId, String taskDescription, Priority taskPriority, User assignedUser){
+        this(taskId, taskDescription, taskPriority, "CREATED", assignedUser);
     }
 
     public int getTaskId() {
@@ -66,7 +64,15 @@ public class Task {
     }
 
     public String printTask(){
-        return String.format("%d. %s, priority: %s, status: %s", getTaskId(), getTaskDescription(), getTaskPriority(), getTaskStatus());
+        return String.format("%d. %s, priority: %s, status: %s, assigned to: %s", getTaskId(), getTaskDescription(), getTaskPriority(), getTaskStatus(), getAssignedUser());
+    }
+
+    public String getAssignedUser(){
+        return this.assignedUser.getUserName();
+    }
+
+    public void setAssignedUser(User user){
+        this.assignedUser = user;
     }
 
 

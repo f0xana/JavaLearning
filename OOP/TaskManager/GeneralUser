@@ -1,0 +1,9 @@
+public class GeneralUser extends User{
+
+    public GeneralUser(String name, String userId){
+        super(name, userId);
+        this.role = "General user";
+        this.numberOfActiveTasks = 3;
+    }
+
+}

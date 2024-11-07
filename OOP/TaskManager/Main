@@ -1,0 +1,12 @@
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello! Welcome to the task manager. C:");
+        System.out.println("Here you can create and keep the track of the tasks you're currently working in.");
+        System.out.println("What would you like to do?");
+        TaskManager tskm = new TaskManager();
+        tskm.getUserManager().addUser(new Admin("Mary", "1234"));
+        tskm.getUserManager().addUser(new GeneralUser("John", "1111"));
+
+        tskm.login();
+    }
+}

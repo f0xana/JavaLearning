@@ -12,7 +12,7 @@ public class UserManager {
         System.out.println("User added: " + user.getUserName());
     }
 
-    public void createUser(String name, String password, String role){
+    public User createUser(String name, String password, String role){
         User newUser = null;
         switch (role){
             case "Administrator":
@@ -23,6 +23,7 @@ public class UserManager {
                 break;
         }
         addUser(newUser);
+        return newUser;
     }
 
     public User signIn(String name, String password){
@@ -34,6 +35,10 @@ public class UserManager {
         }
         System.out.println("This user does not exist in our databases or the password is incorrect");
         return null;
+    }
+
+    public String checkUserRights(User user){
+        return user.getUserRole();
     }
     
 

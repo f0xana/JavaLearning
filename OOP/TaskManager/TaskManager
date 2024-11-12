@@ -13,7 +13,7 @@ public class TaskManager {
     private User currentUser;
     private static final UserManager usManager = new UserManager();
     public static String[] menuOptions = {
-            "Login",
+            "Change user",
             "Display all tasks",
             "Add a task",
             "Remove a task",
@@ -67,25 +67,54 @@ public class TaskManager {
     }
 
     public void login(){
+        System.out.println("What do you like to do?");
+        System.out.println("1 - sign in");
+        System.out.println("2 - create an account");
+        int userChoice = sc.nextInt();
+        sc.nextLine();
         System.out.println("Please enter your username: ");
-        String username = sc.nextLine();
+        String userName = sc.nextLine();
         System.out.println("Please enter your password: ");
-        String password = sc.nextLine();
-        currentUser = usManager.verifyUser(username, password);
-        if (currentUser != null) {
-            System.out.println("Welcome, " + currentUser.getUserName() + "!");
-        } else {
-            login();
+        String userPassword = sc.nextLine();
+        if (userChoice == 1){
+            currentUser = usManager.signIn(userName, userPassword);
+            if (currentUser != null) {
+                System.out.println("Welcome, " + currentUser.getUserName() + "!");
+                selectWhatToDo();
+            } else {
+                login();
+            }
+        } else if (userChoice == 2) {
+            System.out.println("Please confirm your password: ");
+            String passwordConfirm = sc.nextLine();
+            if (Objects.equals(userPassword, passwordConfirm)){
+                usManager.createUser(userName, userPassword, "General User");
+                System.out.println("Welcome, " + currentUser.getUserName() + "!");
+                selectWhatToDo();
+            } else {
+                System.out.println("The confirmation of the password shall be the same as the password!");
+                login();
+            }
         }
-        selectWhatToDo();
     }
 
     public void printAllTasks() {
-        if (tasksList.isEmpty()) {
-            System.out.println("The current list of tasks is empty.");
+        if(Objects.equals(currentUser.getUserRole(), "Administrator")) {
+            if (tasksList.isEmpty()) {
+                System.out.println("The current list of tasks is empty.");
+            } else {
+                for (Task task : tasksList) {
+                    System.out.println(task.printTask());
+                }
+            }
         } else {
-            for (Task task : tasksList) {
-                System.out.println(task.printTask());
+            ArrayList<Task> taskListOfGU = currentUser.getAllTasks();
+            if (taskListOfGU.isEmpty()) {
+                System.out.println("The current list of tasks is empty.");
+            } else {
+                for (Task task : taskListOfGU) {
+                    System.out.println(task.printTask());
+                }
             }
         }
     }
@@ -100,7 +129,7 @@ public class TaskManager {
 
         System.out.println("Please enter the task title:");
         String taskTitle = sc.nextLine();
-        System.out.println("Please enter one of the possible priorities of the task: Low, Moderated, Urgent:");
+        System.out.println("Please enter one of the possible priorities of the task: Low, Moderate, Urgent:");
         String taskPriority = sc.nextLine().trim().toUpperCase().replace(" ", "_");
         if (Objects.equals(currentUser.getUserRole(), "Administrator")) {
             System.out.println("Please enter the name of the user you want to assign to this task: ");
@@ -114,6 +143,7 @@ public class TaskManager {
 
             Task tsk = new Task(taskId, taskTitle, Task.Priority.valueOf(taskPriority), assignedUser);
             tasksList.add(tsk);
+            assignedUser.addTaskToTheUserTaskList(tsk);
             System.out.println("The task is successfully created!");
         } catch (Exception e) {
             System.out.println("The error occured while creating the task: " + e);

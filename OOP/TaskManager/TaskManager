@@ -88,7 +88,7 @@ public class TaskManager {
             System.out.println("Please confirm your password: ");
             String passwordConfirm = sc.nextLine();
             if (Objects.equals(userPassword, passwordConfirm)){
-                usManager.createUser(userName, userPassword, "General User");
+                currentUser = usManager.createUser(userName, userPassword, "General User");
                 System.out.println("Welcome, " + currentUser.getUserName() + "!");
                 selectWhatToDo();
             } else {
@@ -99,7 +99,7 @@ public class TaskManager {
     }
 
     public void printAllTasks() {
-        if(Objects.equals(currentUser.getUserRole(), "Administrator")) {
+        if(Objects.equals(usManager.checkUserRights(currentUser), "Administrator")) {
             if (tasksList.isEmpty()) {
                 System.out.println("The current list of tasks is empty.");
             } else {
@@ -183,7 +183,7 @@ public class TaskManager {
             int taskId = sc.nextInt();
             sc.nextLine();
 
-            System.out.println("Please, enter the status you want to promote/demote your task to: Created, In Progress, Done");
+            System.out.println("Please, enter the description of a task you want to set: ");
             String newDescriptionInput = sc.nextLine().trim();
 
             try {

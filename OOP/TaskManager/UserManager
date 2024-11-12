@@ -7,7 +7,25 @@ public class UserManager {
         this.userList = new ArrayList<User>();
     }
 
-    public User verifyUser(String name, String password){
+    public void addUser(User user){
+        userList.add(user);
+        System.out.println("User added: " + user.getUserName());
+    }
+
+    public void createUser(String name, String password, String role){
+        User newUser = null;
+        switch (role){
+            case "Administrator":
+                newUser = new Admin(name, password);
+                break;
+            case "General User":
+                newUser = new GeneralUser(name, password);
+                break;
+        }
+        addUser(newUser);
+    }
+
+    public User signIn(String name, String password){
         for (User user: userList){
             if (user.getUserName().equals(name) && user.getUserPassword().equals(password)){
                 System.out.printf("Login successful! Current user: %s\n", name);
@@ -17,11 +35,7 @@ public class UserManager {
         System.out.println("This user does not exist in our databases or the password is incorrect");
         return null;
     }
-
-    public void addUser(User user){
-        userList.add(user);
-        System.out.println("User added: " + user.getUserName());
-    }
+    
 
     public User checkIfUserExist(String name){
         for (User user: userList) {

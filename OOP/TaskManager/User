@@ -13,9 +13,15 @@ abstract class User {
         this.password = password;
     }
 
-    public ArrayList<Task> getTasks(){
+    public ArrayList<Task> getAllTasks(){
         return this.tasks;
     }
+
+    public void addTaskToTheUserTaskList(Task tsk) {
+        tasks.add(tsk);
+        System.out.println("Task added to " + this.getUserName() + ": " + tsk.printTask());
+    }
+
 
     public String getUserName(){
         return this.name;

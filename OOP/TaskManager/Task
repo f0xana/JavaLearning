@@ -9,7 +9,7 @@ public class Task {
 //    private String[] priorityStates = {"Low", "Moderated", "Urgent"};
 //    private String[] statusStates = {"Created", "In progress", "Done"};
     public enum Priority {
-        LOW, MODERATED, URGENT
+        LOW, MODERATE, URGENT
     }
 
     public enum Status {

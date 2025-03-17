@@ -1,0 +1,11 @@
+.button {
+    -fx-font-family: "CustomFont"; /* Make sure this matches your font name */
+    -fx-font-size: 15pt;
+    -fx-text-fill: #D92323;
+}
+
+.button:hover {
+    -fx-text-fill: white;
+    -fx-background-color: #000000;
+    -fx-padding: 10 10 10 10;
+}
